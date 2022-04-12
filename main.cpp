@@ -14,10 +14,12 @@
 #include "ridesharing.h"
 #include "Buffer.h"
 #include "Producer.h"
+#include "Consumer.h"
+#include <semaphore.h>
+#include <errno.h>
 
 
 using namespace std;
-
 
 int main(int argc, char **argv){
     // create buffer object
@@ -63,28 +65,27 @@ int main(int argc, char **argv){
      *           and robo driver producers.
      * 
      */
-    args human_args = {
-        buffer,
-        HumanDriver,
-        human_ride_request_time
-    };
-    args robo_args = {
-        buffer,
-        RoboDriver,
-        autonomous_ride_request_time
-    };
+    // store number of requests specified in command line arguments
+    buffer->max_number_of_requests = number_of_requests;
+    sem_init(&buffer->MaxRequests, 0, number_of_requests);
+    ProducerArgs human_args = {buffer, HumanDriver, human_ride_request_time};
+    ProducerArgs robo_args = {buffer, RoboDriver, autonomous_ride_request_time};
 
+    ConsumerArgs cost_algo = {buffer, CostAlgoDispatch, request_dispatching_time};
+    ConsumerArgs fast_algo = {buffer, FastAlgoDispatch, fast_match_dispatch_time};
     // spawn producer and consumer threads
     pthread_t Human_Driver, Robo_Driver, Consumer1, Consumer2;
-    // pthread_create(&Human_Driver, NULL, &produceItem, (void*) &human_args);
-    // pthread_create(&Robo_Driver, NULL, &produceItem, (void*) &robo_args);
+    pthread_create(&Human_Driver, NULL, &produceItem, (void*) &human_args);
+    pthread_create(&Robo_Driver, NULL, &produceItem, (void*) &robo_args);
+    pthread_create(&Consumer1, NULL, &consumeItem, (void*) &cost_algo);
+    pthread_create(&Consumer2, NULL, &consumeItem, (void*) &fast_algo);
+    // wait for producer and consumer threads to finish before resuming main
+    sem_wait(&buffer->Exit);
+    sem_wait(&buffer->Exit);
+    sem_wait(&buffer->Exit);
+    sem_wait(&buffer->Exit);
     // pthread_join(Human_Driver, NULL);
     // pthread_join(Robo_Driver, NULL);
-
-    for(int i = 0; i < buffer->RequestQueue.size(); i++){
-        cout << buffer->RequestQueue[i] << " ";
-    }
-    cout << endl;
     // delete buffer pointer
     delete (buffer);
     return 0;
