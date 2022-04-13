@@ -5,7 +5,7 @@ CXX=g++
 #	-g          include information for symbolic debugger e.g. gdb 
 CXXFLAGS=-std=c++11 -g
 
-ride : Consumer.o Producer.o Buffer.o main.o
+ride : io.o Consumer.o Producer.o Buffer.o main.o
 	$(CXX) $(CXXFLAGS) -lpthread -o rideshare $^ 
 
 main.o: main.cpp
@@ -15,6 +15,8 @@ Buffer.o: Buffer.h Buffer.cpp
 Producer.o: Producer.h Producer.cpp
 
 Consumer.o: Consumer.h Consumer.cpp
+
+io.o: io.h io.cpp
 
 clean :
 	rm *.o

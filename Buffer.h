@@ -13,6 +13,10 @@ using namespace std;
 
 class Buffer{
 public:
+    int requests_produced[RequestTypeN];
+    int requests_consumed[RequestTypeN];
+    int fast_algo_consumption[RequestTypeN];
+    int cost_algo_consumption[RequestTypeN];
     // keeps track of the count of requests currently in the buffer
     int requests_in_queue[RequestTypeN];
     // keeps running count of all requests
