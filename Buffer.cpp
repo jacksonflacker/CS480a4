@@ -21,6 +21,8 @@ Buffer::Buffer(){
     sem_init(&Exit, 0, 0);
     // # of requests
     max_number_of_requests = 0;
+    // # of consumed requests
+    max_number_of_consumptions = 0;
 }
 void Buffer::insertIntoBuffer(int item){
 }

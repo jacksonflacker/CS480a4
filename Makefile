@@ -6,7 +6,7 @@ CXX=g++
 CXXFLAGS=-std=c++11 -g
 
 ride : io.o Consumer.o Producer.o Buffer.o main.o
-	$(CXX) $(CXXFLAGS) -lpthread -o rideshare $^ 
+	$(CXX) $(CXXFLAGS) -o rideshare $^ -lpthread -lrt
 
 main.o: main.cpp
 

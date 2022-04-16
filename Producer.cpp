@@ -25,7 +25,13 @@ void* produceItem(void * buf){
         sem_wait(&producer_args->buf->AvailableSlots);
         // access buffer exclusively 
         sem_wait(&producer_args->buf->Mutex);
-
+        // if all requests made, exit
+        if(producer_args->buf->max_number_of_requests == 0){
+            // release buffer to other threads
+            sem_post(&producer_args->buf->Mutex);
+            // exit thread
+            break;
+        }
         // insert item into buffer queue
         producer_args->buf->RequestQueue.push_back(item);
         // decrement semaphore which holds total number of requests
@@ -34,15 +40,18 @@ void* produceItem(void * buf){
         io_add_type(
             (RequestType)item,
             producer_args->buf->requests_in_queue,
-            producer_args->buf->requests_consumed
+            producer_args->buf->requests_produced
         );
-        // relinquish buffer to other threads
+        producer_args->buf->max_number_of_requests--;
+        // relinquish buffer to other threads        
         sem_post(&producer_args->buf->Mutex);
+        //cout <<item<< " MaxRequest Sem val: "<<sem_val<<endl;
         // increment semaphore for unconsumed items
         sem_post(&producer_args->buf->Unconsumed);
-        sem_wait(&producer_args->buf->MaxRequests);
+        //sem_wait(&producer_args->buf->MaxRequests);
         
     }
+    cout << "\n\nexit thread producer\n\n";
     sem_post(&producer_args->buf->Exit);
     return NULL;
 }

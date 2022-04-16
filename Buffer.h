@@ -13,7 +13,9 @@ using namespace std;
 
 class Buffer{
 public:
+    // array of produced request type count
     int requests_produced[RequestTypeN];
+    // array of consumed request type count
     int requests_consumed[RequestTypeN];
     int fast_algo_consumption[RequestTypeN];
     int cost_algo_consumption[RequestTypeN];
@@ -30,6 +32,8 @@ public:
     int max_queue_size;
     // total number of requests
     int max_number_of_requests;
+    // total number of consumed requests
+    int max_number_of_consumptions;
     // queue containing driver requests
     vector<int> RequestQueue;
     // function to insert (produce) item into queue
