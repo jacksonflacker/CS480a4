@@ -5,6 +5,8 @@
 #include <semaphore.h>
 #include "ridesharing.h"
 
+/*Header file for the shared buffer that is used by the threads.*/
+
 using namespace std;
 // max size of buffer queue
 #define MAX_BUFFER_SIZE 12
