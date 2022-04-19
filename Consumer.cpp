@@ -11,11 +11,13 @@ void* consumeItem(void *buf){
     int item;
     while(true){
         // check if all items consumed
-        if(consumer_args->buf->max_number_of_consumptions == 0)
-            break; // exit loop
         // decrement semaphore keeping count of available slots in buffer
         sem_wait(&consumer_args->buf->Unconsumed);
         // access buffer exclusively 
+        if(consumer_args->buf->max_number_of_consumptions == 0){
+            // one thread may be stuck in unconsumed wait
+            break; // exit loop
+        }
         sem_wait(&consumer_args->buf->Mutex);
         // remove item from buffer
         item = consumer_args->buf->RequestQueue[0];
@@ -45,14 +47,18 @@ void* consumeItem(void *buf){
             consumer_args->buf->requests_in_queue,
             arrPointer
         );
-
         // relinquish buffer to other threads
         sem_post(&consumer_args->buf->Mutex);
         sem_post(&consumer_args->buf->AvailableSlots);
         // wait for designated wait time
         usleep(consumer_args->wait_time *1000); // converting to milliseconds
+        if(consumer_args->buf->max_number_of_consumptions == 0){
+            // one thread may be stuck in unconsumed wait
+            sem_post(&consumer_args->buf->Unconsumed);
+            break; // exit loop
+        }
     }
-    cout << "\n\nexit thread consumer\n\n";
+    cout << "\n\nexit thread consumer "<<consumer_args->consume_type<<"\n\n";
     sem_post(&consumer_args->buf->Exit);
     return NULL;
 }
