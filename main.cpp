@@ -84,7 +84,9 @@ int main(int argc, char **argv){
     pthread_create(&Consumer1, NULL, &consumeItem, (void*) &cost_algo);
     pthread_create(&Consumer2, NULL, &consumeItem, (void*) &fast_algo);
 
-    // wait for producer and consumer threads to finish before resuming main
+    /* wait for producer and consumer threads to finish before resuming main
+    creates a barrier to ensure precedence constraint by blocking the main thread
+    until cosumption is complete */
     sem_wait(&buffer->Exit);
     sem_wait(&buffer->Exit);
     sem_wait(&buffer->Exit);
