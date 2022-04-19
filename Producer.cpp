@@ -5,6 +5,20 @@
 
 using namespace std;
 
+
+/*void produceItem(void *buf): 
+Purpose: is to provide common code for the producer threads to use when created.
+Utilizes POSIX (unnamed) semaphores in order to ensure critical regions when
+writing into buffer and proper resource usage. Produces and publish rider requests
+to the broker until it reaches the limit to production based on command line input.
+Signals it is complete to the semaphore before exiting.
+
+Expects: 
+void *buf: Is a shared data structure used to communicate between POSIX threads
+
+Return: Does not return anything
+*/
+
 void* produceItem(void * buf){
     // structure containing buffer, item type, and wait time
     ProducerArgs *producer_args = (ProducerArgs*) buf;

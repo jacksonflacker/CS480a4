@@ -6,6 +6,18 @@
 
 using namespace std;
 
+/*void consumeItem(void *buf): 
+Purpose: is to provide common code for the consumer threads to use when created.
+Utilizes POSIX (unnamed) semaphores in order to ensure critical regions when
+writing into buffer and proper resource usage. Consumes until has consumed the last 
+request based on command line input and signals it is complete to the semaphore before exiting.
+
+Expects: 
+void *buf: Is a shared data structure used to communicate between POSIX threads
+
+Return: Does not return anything
+*/
+
 void* consumeItem(void *buf){
     ConsumerArgs * consumer_args = (ConsumerArgs*) buf;
     int item;
